@@ -7,62 +7,58 @@ import {
   StyleSheet,
   Platform
 } from 'react-native'
+import { connect } from 'react-redux'
+import { fetchDecks } from '../actions'
 import { blue, white } from '../utils/colors'
 import DeckCard from './DeckCard'
-import { fetchSingleDeck } from '../utils/api'
+import { fetchInitialData } from '../utils/api'
 
-export default class DeckDetails extends Component {
+class DeckDetails extends Component {
 
   static navigationOptions = ({ navigation }) => ({
     title: 'Deck Details',
   })
 
   state = {
-    ready: false,
     activeDeck: '',
-    deckId: this.props.navigation.state.params.deckId
+    deck: this.props.navigation.state.params.deck,
+    decks: this.props.decks
   }
 
-  componentDidMount() {
-    const { deckId } = this.props.navigation.state.params
-
-    this.updateData(deckId)
-  }
-
-  updateData (deckId) {
-    fetchSingleDeck(deckId).then((data) =>
-      this.setState(() => ({
-        activeDeck: data
-      }))
-    )
-    .then(() => this.setState(() => ({
-      ready: true
-    })))
-  }
-
-  componentWillUnmount() {
-    this.setState({
-      ready: false
-    })
-  }
+  // componentDidMount() {
+  //   this.updateDecks();
+  // }
+  //
+  // updateDecks () {
+  //   fetchInitialData()
+  //     .then((data) => {
+  //       this.setState(() => ({
+  //         decks: data
+  //       }))
+  //       this.props.dispatch(fetchDecks(data))
+  //     }
+  //   )
+  // }
 
   render() {
-    const { activeDeck } = this.state
-    const { id, title, questions } = activeDeck
+    const { activeDeck, deck } = this.state
+    const { decks } = this.props
+    const currentDeck = Object.keys(decks).map(key => decks[key].id === deck.id && decks[key]).filter(d => d)[0]
+    const { id, title, questions } = currentDeck
 
     return (
       <View style={styles.container}>
-          {activeDeck &&
-            <View style={styles.deck}>
-              <DeckCard { ...activeDeck } />
-            </View>
-          }
-
+        {currentDeck &&
+          <View style={styles.deck}>
+            <DeckCard
+              { ...currentDeck } />
+          </View>
+        }
           <TouchableOpacity
             style={Platform.OS === 'ios' ? styles.iosBtn : styles.AndroidBtn}
             onPress={() => this.props.navigation.navigate(
               'AddCard',
-              { id, title, updateData: this.updateData.bind(this) }
+              { id, title, questions }
             )}>
               <Text style={styles.BtnText}>ADD CARD</Text>
           </TouchableOpacity>
@@ -71,7 +67,7 @@ export default class DeckDetails extends Component {
             style={Platform.OS === 'ios' ? styles.iosBtn : styles.AndroidBtn}
             onPress={() => this.props.navigation.navigate(
               'Quiz',
-              { activeDeck }
+              { currentDeck }
             )}>
               <Text style={styles.BtnText}>START QUIZ</Text>
           </TouchableOpacity>
@@ -142,3 +138,11 @@ const styles = StyleSheet.create({
     marginRight: 30,
   },
 })
+
+function mapStateToProps (decks) {
+  return {
+    decks
+  }
+}
+
+export default connect(mapStateToProps)(DeckDetails);

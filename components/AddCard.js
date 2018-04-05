@@ -6,6 +6,8 @@ import {
   setLocalNotification,
  } from '../utils/helpers'
 import { Ionicons } from '@expo/vector-icons'
+import { connect } from 'react-redux'
+import { fetchDecks, submitNewCard } from '../actions'
 import { submitCard } from '../utils/api'
 import { blue, white } from '../utils/colors'
 import { NavigationActions } from 'react-navigation'
@@ -30,6 +32,7 @@ class AddCard extends Component {
     this.state = {
       id: this.props.navigation.state.params.id,
       title: this.props.navigation.state.params.title,
+      questions: this.props.navigation.state.params.questions,
       question: '',
       answer: '',
       isQueFilled: false,
@@ -47,15 +50,21 @@ class AddCard extends Component {
   }
 
   submit = () => {
-    const { id, title, question, answer } = this.state
+    const { id, title, questions, question, answer } = this.state
+    const { addNewCard } = this.props
+
+    const params = {title, questions, question, answer};
+
     const newQue = {
       question,
       answer
     }
 
-    this.toCardHome(id)
+    this.toCardHome()
 
     submitCard(id, question, answer)
+    .then((data) => this.props.dispatch(fetchDecks(data)))
+    //this.props.dispatch(submitNewCard(params))
 
     this.setState({
       question: '',
@@ -66,8 +75,7 @@ class AddCard extends Component {
       .then(setLocalNotification)
   }
 
-  toCardHome = (id) => {
-    this.props.navigation.state.params.updateData(id)
+  toCardHome = () => {
     this.props.navigation.goBack()
   }
   render() {
@@ -150,5 +158,19 @@ const styles = StyleSheet.create({
   },
 })
 
+const mapStateToProps = (decks) => {
+  return {
+    decks
+  }
+}
 
-export default AddCard
+function mapDispatchToProps (dispatch, { navigation }) {
+  const { id } = navigation.state.params
+
+  return {
+    addNewCard: (params) => dispatch(submitNewCard(params)),
+    goBack: () => navigation.goBack(),
+  }
+}
+
+export default connect(mapStateToProps)(AddCard)

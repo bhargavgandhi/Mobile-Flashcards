@@ -2,17 +2,21 @@ import {AsyncStorage} from 'react-native';
 import {DATA_STORAGE_KEY, getDecks} from './data';
 
 export function fetchInitialData() {
-  return AsyncStorage.getItem(DATA_STORAGE_KEY).then(getDecks)
+  return AsyncStorage.getItem(DATA_STORAGE_KEY)
+  .then(getDecks)
 }
 
 export function fetchSingleDeck(id) {
-  return AsyncStorage.getItem(DATA_STORAGE_KEY).then(results => JSON.parse(results)).then(data => Object.keys(data).map(key => data[key].id === id && data[key]).filter(e => e)[0])
+  return AsyncStorage.getItem(DATA_STORAGE_KEY)
+  .then(getDecks)
+  .then(data => Object.keys(data).map(key => data[key].id === id && data[key]).filter(e => e)[0])
 }
 
-export function submitEntry({newDeck}) {
+export function submitEntry({ newDeck }) {
   return AsyncStorage.mergeItem(DATA_STORAGE_KEY, JSON.stringify({
     ...newDeck
   }))
+  .then(() => AsyncStorage.getItem(DATA_STORAGE_KEY).then(getDecks))
 }
 
 export function submitCard(id, question, answer) {
@@ -23,14 +27,15 @@ export function submitCard(id, question, answer) {
       decks[key].questions.push({question, answer})
     }
     return decks[key]
-  })).then((res) => {
+  }))
+  .then((res) => {
     return AsyncStorage.removeItem(DATA_STORAGE_KEY).then(() => {
       return AsyncStorage.mergeItem(DATA_STORAGE_KEY, JSON.stringify({
         ...res
       }))
     })
   })
-
+  .then(() => AsyncStorage.getItem(DATA_STORAGE_KEY).then(getDecks))
 }
 
 export function removeEntry(key) {

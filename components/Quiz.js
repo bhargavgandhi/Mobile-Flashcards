@@ -11,7 +11,7 @@ export default class Quiz extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      deck: this.props.navigation.state.params.activeDeck,
+      deck: this.props.navigation.state.params.currentDeck,
       questions: '',
       correct: 0,
       incorrect: 0,

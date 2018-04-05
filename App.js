@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, Platform, StatusBar } from 'react-native';
 import { TabNavigator, StackNavigator } from 'react-navigation'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import { Constants } from 'expo'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import reducer from './reducers'
 import { setLocalNotification } from './utils/helpers'
 import { blue, white } from './utils/colors'
 import DeckList from './components/DeckList'
@@ -24,6 +27,7 @@ const Tabs = TabNavigator({
     screen: DeckList,
     navigationOptions: {
       tabBarLabel: 'Decks',
+      tabBarIcon: ({ tintColor }) => <Ionicons name='ios-albums' size={30} color={tintColor} />
     },
   },
   AddDeck: {
@@ -89,10 +93,12 @@ const MainNavigator = StackNavigator({
 export default class App extends React.Component {
   render() {
     return (
-      <View style={{flex: 1}}>
-        <MFCStatusBar backgroundColor={blue} barStyle='light-content' />
-        <MainNavigator />
-      </View>
+      <Provider store={createStore(reducer)}>
+        <View style={{flex: 1}}>
+          <MFCStatusBar backgroundColor={blue} barStyle='light-content' />
+          <MainNavigator />
+        </View>
+      </Provider>
     );
   }
 }

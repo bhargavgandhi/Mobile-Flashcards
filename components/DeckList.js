@@ -8,13 +8,14 @@ import {
   TouchableOpacity
 } from 'react-native'
 import { AppLoading } from 'expo'
+import { connect } from 'react-redux';
+import { fetchDecks } from '../actions';
 import { getDailyReminderValue } from '../utils/helpers'
 import { fetchInitialData } from '../utils/api'
 import { blue, white } from '../utils/colors'
 import DeckCard from './DeckCard'
 
-
-export default class DeckList extends Component {
+class DeckList extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Decks',
   })
@@ -23,13 +24,24 @@ export default class DeckList extends Component {
     ready: false,
     decks: ''
   }
+
   componentDidMount() {
-    fetchInitialData().then((data) => this.setState(() => ({decks: data}))).then(() => this.setState(() => ({ready: true})))
+    const { dispatch } = this.props
+    this.updateDeckList(dispatch);
+  }
+
+  updateDeckList(dispatch) {
+    fetchInitialData()
+    .then((data) => dispatch(fetchDecks(data)))
+    .then(() => this.setState(() => ({
+      ready: true
+    })))
   }
 
   render() {
-    const {ready} = this.state
-    let {decks} = this.state
+    const { ready } = this.state
+    let { decks } = this.props
+
 
     if (ready === false) {
       return <AppLoading />
@@ -43,10 +55,10 @@ export default class DeckList extends Component {
               <View style={styles.deck} key={index}>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate(
                   'DeckDetails',
-                  { deckId: decks[key].id}
+                  { deck: decks[key], id: decks[key].id}
                 )}>
                   <DeckCard
-                    {...decks[key]}
+                    { ...decks[key] }
                     />
                 </TouchableOpacity>
               </View>
@@ -81,3 +93,11 @@ const styles = StyleSheet.create({
     }
   }
 })
+
+const mapStateToProps = (decks) => {
+  return {
+    decks
+  }
+}
+
+export default connect(mapStateToProps)(DeckList);

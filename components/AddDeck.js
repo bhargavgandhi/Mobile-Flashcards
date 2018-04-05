@@ -7,6 +7,8 @@ import {
   guid,
 } from '../utils/helpers'
 import { Ionicons } from '@expo/vector-icons'
+import { connect } from 'react-redux'
+import { fetchDecks } from '../actions'
 import { submitEntry, removeEntry } from '../utils/api'
 import { blue, white } from '../utils/colors'
 import { NavigationActions } from 'react-navigation'
@@ -47,6 +49,8 @@ class AddDeck extends Component {
     this.toHome()
 
     submitEntry({ newDeck })
+    .then((data) => this.props.dispatch(fetchDecks(data)))
+
 
     clearLocalNotification()
       .then(setLocalNotification)
@@ -130,5 +134,10 @@ const styles = StyleSheet.create({
   },
 })
 
+const mapStateToProps = (decks) => {
+  return {
+    decks
+  }
+}
 
-export default AddDeck
+export default connect(mapStateToProps)(AddDeck);
