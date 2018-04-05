@@ -1,5 +1,17 @@
+
 {
   "expo": {
-    "sdkVersion": "26.0.0"
-  }
+    "sdkVersion": "26.0.0",
+    "orientation": "portrait",
+    "name": "MobileFlashcards",
+    "description": "The best app for flash cards with quiz.",
+    "slug": "mobileflashcards",
+    "version": "1.0",
+    "ios": {
+     "bundleIdentifier": "org.mobileflashcards.exp",
+    },
+    "android": {
+     "package": "org.mobileflashcards.exp",
+    }
+  },
 }
