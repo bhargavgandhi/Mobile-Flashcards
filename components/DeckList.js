@@ -26,13 +26,13 @@ class DeckList extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    this.updateDeckList(dispatch);
+    this.updateDeckList();
   }
 
-  updateDeckList(dispatch) {
+  updateDeckList() {
+
     fetchInitialData()
-    .then((data) => dispatch(fetchDecks(data)))
+    .then((data) => this.props.dispatch(fetchDecks(data)))
     .then(() => this.setState(() => ({
       ready: true
     })))
@@ -48,7 +48,6 @@ class DeckList extends Component {
     }
 
     return (
-      <View>
         <ScrollView>
           {decks &&
             Object.keys(decks).map((key, index) => (
@@ -66,8 +65,7 @@ class DeckList extends Component {
           )
           }
         </ScrollView>
-      </View>
-  )
+      )
   }
 
 }

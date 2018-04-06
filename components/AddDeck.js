@@ -51,7 +51,12 @@ class AddDeck extends Component {
     submitEntry({ newDeck })
     .then((data) => this.props.dispatch(fetchDecks(data)))
 
-
+    this.setState({
+      id: '',
+      title: '',
+      isFilled: false,
+    })
+    
     clearLocalNotification()
       .then(setLocalNotification)
   }
@@ -75,7 +80,6 @@ class AddDeck extends Component {
             onChangeText={this.onTitleChange}
           />
         </View>
-        })}
         <SubmitBtn onPress={this.submit} />
       </View>
     )

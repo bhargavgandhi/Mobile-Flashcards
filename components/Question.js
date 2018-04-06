@@ -10,6 +10,13 @@ export default class Question extends Component {
       qaToggle: false,
     }
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.question !== this.props.question) {
+      this.setState({
+        qaToggle: false
+      })
+    }
+  }
 
   render(){
     const { question, answer } = this.props
